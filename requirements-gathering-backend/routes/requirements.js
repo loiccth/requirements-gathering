@@ -14,7 +14,7 @@ const upload = multer({ storage: storage })
 const Requirement = require('../models/requirement.model')
 
 router.get('/inprogress', (req, res) => {
-    Requirement.find({ status: 'inprogress' })
+    Requirement.find({ $or: [{ status: 'inprogress' }, { status: 'open' }] })
         .then(result => {
             res.json(result)
         })
@@ -61,7 +61,7 @@ router.get('/img/:id', (req, res) => {
 })
 
 router.post('/', (req, res) => {
-    if (!req.body.firstname || !req.body.lastname || !req.body.description || !req.body.priority || !req.body.moscow)
+    if (!req.body.firstname || !req.body.lastname || !req.body.description || !req.body.priority || !req.body.moscow || !req.body.status)
         return res.status(400).json({
             error: 'Missing data'
         })
@@ -72,6 +72,7 @@ router.post('/', (req, res) => {
         description: req.body.description,
         priority: req.body.priority,
         moscow: req.body.moscow,
+        status: req.body.status
     })
 
     newRequirement.save()
@@ -98,6 +99,20 @@ router.delete('/:id', (req, res) => {
 
 router.patch('/:id', upload.single('img'), (req, res) => {
     Requirement.findByIdAndUpdate(req.params.id, { img: req.params.id + path.extname(req.file.originalname), status: 'completed' })
+        .then(() => {
+            res.status(200).json({
+                message: 'Requirements successfully updated.'
+            })
+        })
+        .catch(err => {
+            res.status(400).json({
+                error: err.message
+            })
+        })
+})
+
+router.patch('/inprogress/:id', (req, res) => {
+    Requirement.findByIdAndUpdate(req.params.id, { status: 'inprogress' })
         .then(() => {
             res.status(200).json({
                 message: 'Requirements successfully updated.'

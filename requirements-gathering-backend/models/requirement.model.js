@@ -8,7 +8,7 @@ const requirementSchema = new Schema({
     description: { type: String, required: true, trim: true },
     priority: { type: Number, require: true, min: 1, max: 100 },
     moscow: { type: Number, require: true, min: 1, max: 4 },
-    status: { type: String, enum: ['inprogress', 'completed', 'obsolete'], default: 'inprogress' },
+    status: { type: String, enum: ['open', 'inprogress', 'completed', 'obsolete'], default: 'open' },
     img: { type: String, required: false, trim: true }
 }, { timestamps: true })
 

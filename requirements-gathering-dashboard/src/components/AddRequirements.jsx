@@ -14,10 +14,11 @@ const AddRequirements = ({ handleUpdate }) => {
         type: 'info',
         msg: ''
     })
-    const { register, handleSubmit, errors, reset, control } = useForm({
+    const { register, handleSubmit, reset, control } = useForm({
         defaultValues: {
             priority: 50,
-            moscow: 1
+            moscow: 1,
+            status: 'open'
         }
     })
 
@@ -100,6 +101,22 @@ const AddRequirements = ({ handleUpdate }) => {
                                                 <MenuItem value={2}>Should Have</MenuItem>
                                                 <MenuItem value={3}>Could Have</MenuItem>
                                                 <MenuItem value={4}>Won't Have</MenuItem>
+                                            </Select>
+                                        )}
+                                    />
+                                </FormControl>
+                            </Box>
+
+                            <Box sx={{ my: 2 }}>
+                                <FormControl>
+                                    <InputLabel id="status">Status</InputLabel>
+                                    <Controller
+                                        name="status"
+                                        control={control}
+                                        render={({ field }) => (
+                                            <Select fullWidth labelId="status" label="status" {...field}>
+                                                <MenuItem value='open'>Open</MenuItem>
+                                                <MenuItem value='inprogress'>In Progress</MenuItem>
                                             </Select>
                                         )}
                                     />

@@ -6,7 +6,8 @@ import Modal from '@mui/material/Modal'
 import axios from 'axios'
 import Snack from './Snack'
 
-const TestCaseModal = ({ id, open, handleClose, handleUpdate }) => {
+const TestCaseModal = ({ id, handleUpdate }) => {
+    const [open, setOpen] = React.useState(false)
     const [file, setFile] = React.useState()
     const [snack, setSnack] = React.useState({
         open: false,
@@ -24,6 +25,14 @@ const TestCaseModal = ({ id, open, handleClose, handleUpdate }) => {
         boxShadow: 24,
         borderRadius: '5px',
         p: 2,
+    }
+
+    const handleClose = () => {
+        setOpen(false)
+    }
+
+    const handleOpen = () => {
+        setOpen(true)
     }
 
     const handleChange = (e) => {
@@ -63,16 +72,19 @@ const TestCaseModal = ({ id, open, handleClose, handleUpdate }) => {
                     msg: 'Invalid file format.'
                 })
         }
-        setSnack({
-            open: true,
-            type: 'error',
-            msg: 'No image selected.'
-        })
+        else
+            setSnack({
+                open: true,
+                type: 'error',
+                msg: 'No image selected.'
+            })
     }
 
     return (
         <>
             <Snack snack={snack} setSnack={setSnack} />
+
+            <Button variant="contained" color="primary" onClick={handleOpen}>Upload Testcase</Button>
 
             <Modal
                 open={open}

@@ -24,7 +24,7 @@ const Appbar = () => {
     }
 
     return (
-        <AppBar position="static" sx={{ backgroundColor: 'hotpink' }}>
+        <AppBar position="static" >
             <Container maxWidth="xl">
                 <Toolbar disableGutters>
                     <Typography

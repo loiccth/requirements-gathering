@@ -3,9 +3,14 @@ import { Button, Container, Paper, Typography } from '@mui/material'
 import { DataGrid } from '@mui/x-data-grid'
 import axios from 'axios'
 import AddRequirement from './AddRequirements'
+import ModalData from './ModalData'
 
 const DataCompleted = () => {
     const [data, setData] = React.useState([])
+    const [modal, setModal] = React.useState({
+        open: false,
+        data: {}
+    })
 
     const columns = [
         { field: 'firstname', headerName: 'First Name', headerAlign: 'center', width: 150 },
@@ -57,6 +62,7 @@ const DataCompleted = () => {
             field: 'status', headerName: 'Status', headerAlign: 'center', width: 110, valueGetter: (params) => {
                 if (params.row.status === 'completed') return 'Completed'
                 else if (params.row.status === 'inprogress') return 'In Progress'
+                else if (params.row.status === 'open') return 'Open'
                 else if (params.row.status === 'obsolete') return 'Obsolete'
             },
             renderCell: (params) => {
@@ -64,22 +70,31 @@ const DataCompleted = () => {
                     return <Typography variant='body2' sx={{ backgroundColor: 'green', color: 'white', borderRadius: '10px', p: 1 }}>{params.value}</Typography>
                 else if (params.value === 'In Progress')
                     return <Typography variant='body2' sx={{ backgroundColor: 'orange', color: 'white', borderRadius: '10px', p: 1 }}>{params.value}</Typography>
+                else if (params.value === 'Open')
+                    return <Typography variant='body2' sx={{ backgroundColor: 'gray', color: 'white', borderRadius: '10px', p: 1 }}>{params.value}</Typography>
                 else if (params.value === 'Obsolete')
                     return <Typography variant='body2' sx={{ backgroundColor: 'pink', color: 'white', borderRadius: '10px', p: 1 }}>{params.value}</Typography>
             }
-        },
-        {
-            field: 'testcase', headerName: 'Test Case', headerAlign: 'center', width: 150, sortable: false, renderCell: (params) => {
-                return <Button variant='contained' onClick={() => {
-                    window.open(`${process.env.REACT_APP_API}requirements/img/${params.row.id}`)
-                }}>View</Button>
-            }
-        },
+        }
     ]
 
     React.useEffect(() => {
         handleUpdate()
     }, [])
+
+    const handleOpenModal = (e) => {
+        setModal({
+            open: true,
+            data: e.row
+        })
+    }
+
+    const handleCloseModal = () => {
+        setModal({
+            open: false,
+            data: {}
+        })
+    }
 
     const handleUpdate = () => {
         axios.get(`${process.env.REACT_APP_API}requirements/completed`)
@@ -112,9 +127,10 @@ const DataCompleted = () => {
                 <Container sx={{ mt: 4 }} maxWidth="xl">
                     <Paper>
                         <div style={{ height: '75vh', width: '100%' }}>
-                            <DataGrid rows={data} columns={columns} disableSelectionOnClick autoPageSize />
+                            <DataGrid rows={data} columns={columns} onRowClick={handleOpenModal} disableSelectionOnClick autoPageSize />
                         </div>
                     </Paper>
+                    <ModalData modal={modal} handleCloseModal={handleCloseModal} />
                 </Container>
             }
         </>

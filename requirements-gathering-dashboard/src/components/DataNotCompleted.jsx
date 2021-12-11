@@ -4,11 +4,16 @@ import { DataGrid } from '@mui/x-data-grid'
 import axios from 'axios'
 import AddRequirement from './AddRequirements'
 import TestCaseModal from './TestCaseModal'
+import ModalData from './ModalData'
 
 const DataNotCompleted = () => {
     const [data, setData] = React.useState([])
     const [id, setId] = React.useState()
     const [open, setOpen] = React.useState(false)
+    const [modal, setModal] = React.useState({
+        open: false,
+        data: {}
+    })
 
     const columns = [
         { field: 'firstname', headerName: 'First Name', headerAlign: 'center', width: 150 },
@@ -60,6 +65,7 @@ const DataNotCompleted = () => {
             field: 'status', headerName: 'Status', headerAlign: 'center', width: 110, valueGetter: (params) => {
                 if (params.row.status === 'completed') return 'Completed'
                 else if (params.row.status === 'inprogress') return 'In Progress'
+                else if (params.row.status === 'open') return 'Open'
                 else if (params.row.status === 'obsolete') return 'Obsolete'
             },
             renderCell: (params) => {
@@ -67,18 +73,20 @@ const DataNotCompleted = () => {
                     return <Typography variant='body2' sx={{ backgroundColor: 'green', color: 'white', borderRadius: '10px', p: 1 }}>{params.value}</Typography>
                 else if (params.value === 'In Progress')
                     return <Typography variant='body2' sx={{ backgroundColor: 'orange', color: 'white', borderRadius: '10px', p: 1 }}>{params.value}</Typography>
+                else if (params.value === 'Open')
+                    return <Typography variant='body2' sx={{ backgroundColor: 'gray', color: 'white', borderRadius: '10px', p: 1 }}>{params.value}</Typography>
                 else if (params.value === 'Obsolete')
                     return <Typography variant='body2' sx={{ backgroundColor: 'pink', color: 'white', borderRadius: '10px', p: 1 }}>{params.value}</Typography>
             }
-        },
-        {
-            field: 'action', headerName: 'Action', headerAlign: 'center', width: 150, sortable: false, renderCell: (params) => {
-                return <Button variant='contained' onClick={() => {
-                    setId(params.row.id)
-                    setOpen(true)
-                }}>Upload</Button>
-            }
-        },
+        }
+        // {
+        //     field: 'action', headerName: 'Action', headerAlign: 'center', width: 150, sortable: false, renderCell: (params) => {
+        //         return <Button variant='contained' onClick={() => {
+        //             setId(params.row.id)
+        //             setOpen(true)
+        //         }}>Upload</Button>
+        //     }
+        // },
     ]
 
     React.useEffect(() => {
@@ -87,6 +95,20 @@ const DataNotCompleted = () => {
 
     const handleClose = () => {
         setOpen(false)
+    }
+
+    const handleOpenModal = (e) => {
+        setModal({
+            open: true,
+            data: e.row
+        })
+    }
+
+    const handleCloseModal = () => {
+        setModal({
+            open: false,
+            data: {}
+        })
     }
 
     const handleUpdate = () => {
@@ -120,10 +142,11 @@ const DataNotCompleted = () => {
                 <Container sx={{ mt: 4 }} maxWidth="xl">
                     <Paper>
                         <div style={{ height: '75vh', width: '100%' }}>
-                            <DataGrid rows={data} columns={columns} disableSelectionOnClick autoPageSize />
+                            <DataGrid rows={data} columns={columns} onRowClick={handleOpenModal} disableSelectionOnClick autoPageSize />
                         </div>
                     </Paper>
-                    <TestCaseModal id={id} open={open} handleClose={handleClose} handleUpdate={handleUpdate} />
+                    {/* <TestCaseModal id={id} open={open} handleClose={handleClose} handleUpdate={handleUpdate} /> */}
+                    <ModalData modal={modal} handleCloseModal={handleCloseModal} handleUpdate={handleUpdate} />
                 </Container>
             }
         </>
